@@ -5,5 +5,18 @@ edition = "2021"
 
 [dependencies]
 
+[dev-dependencies]
+rand = "0.8"
+criterion = { version = "0.7", features = ["html_reports"] }
+
+[[bin]]
+name = "project"
+path = "src/main.rs"
+
+[[bench]]
+#path = "src/bench/matrix.rs"
+name = "matrix"
+harness = false
+
 [profile.dev.package."*"]
 opt-level = 3
