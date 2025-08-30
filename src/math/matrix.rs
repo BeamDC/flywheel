@@ -44,11 +44,14 @@ where
         if row < self.rows && col < self.cols {
             return Some(&self.data[row * self.cols + col])
         }
-        println!(
-            "({}, {}) is out of bounds ({} {})",
-            row, col, self.rows, self.cols
-        );
         None
+    }
+
+    /// set the value in the matrix at position (`row`, `col`)
+    fn set(&mut self, row: usize, col: usize, value: T) {
+        if row < self.rows && col < self.cols {
+            self.data[row * self.cols + col] = value;
+        }
     }
 
     /// transpose a `Matrix<T>`
@@ -79,27 +82,34 @@ where
 
         // todo : for 2x2 matrices, optimize with a direct calculation
 
-        let mut data = Vec::with_capacity(self.rows * rhs.cols);
         let rhs_trans = rhs.transpose();
 
         let i_bound = self.rows;
-        let j_bound = rhs.cols;
+        let j_bound = rhs_trans.rows;
         let k_bound = self.cols;
+        let (block_x, block_y) = (1, 1);
 
+        let mut res = Matrix::from_vec(
+            i_bound,
+            j_bound,
+            vec![T::default(); i_bound * j_bound],
+        );
+
+        // blocked version
         for i in 0..i_bound {
             for j in 0..j_bound {
-
-                let mut sum = T::default();
+                let mut partial_sum = T::default();
                 for k in 0..k_bound {
                     let a = self.get(i, k).unwrap().clone();
-                    let b = rhs_trans.get(j ,k).unwrap().clone();
-                    sum = sum + (a * b);
+                    let b = rhs_trans.get(j, k).unwrap().clone();
+                    partial_sum = partial_sum + a * b;
                 }
-                data.push(sum);
-
+                let val = res.get(i, j).unwrap().clone();
+                res.set(i, j, val + partial_sum);
             }
         }
 
-        Matrix { data, rows: self.rows, cols: rhs.cols }
+        // Matrix { data, rows: self.rows, cols: rhs.cols }
+        res
     }
 }
