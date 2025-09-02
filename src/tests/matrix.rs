@@ -19,7 +19,7 @@ fn test_transpose() {
 }
 
 #[test]
-fn test_mul_square() {
+fn test_mul_2x2() {
     let a_data = vec![1, 2, 3, 4];
     let b_data = vec![4, 3, 2, 1];
 
@@ -30,6 +30,39 @@ fn test_mul_square() {
     assert_eq!(c.rows, 2);
     assert_eq!(c.cols, 2);
     assert_eq!(c.data, vec![8, 5, 20, 13]);
+}
+
+#[test]
+fn test_mul_3x3() {
+    let a_data = vec![1, 2, 3, 4, 5, 6, 7, 8, 9];
+    let b_data = vec![9, 8, 7, 6, 5, 4, 3, 2, 1];
+
+    let a = Matrix::from_vec(3, 3, a_data);
+    let b = Matrix::from_vec(3, 3, b_data);
+    let c = a * b;
+
+    assert_eq!(c.rows, 3);
+    assert_eq!(c.cols, 3);
+    assert_eq!(c.data, vec![30, 24, 18,
+                            84, 69, 54,
+                            138, 114, 90]);
+}
+
+#[test]
+fn test_mul_4x4() {
+    let a_data = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+    let b_data = vec![16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
+
+    let a = Matrix::from_vec(4, 4, a_data);
+    let b = Matrix::from_vec(4, 4, b_data);
+    let c = a * b;
+
+    assert_eq!(c.rows, 4);
+    assert_eq!(c.cols, 4);
+    assert_eq!(c.data, vec![80, 70, 60, 50,
+                            240, 214, 188, 162,
+                            400, 358, 316, 274,
+                            560, 502, 444, 386]);
 }
 
 #[test]

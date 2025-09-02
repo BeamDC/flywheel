@@ -51,6 +51,21 @@ where
         self.is_square() && self.rows.is_power_of_two()
     }
 
+    #[inline(always)]
+    pub fn is_2x2(&self) -> bool {
+        self.rows == 2 && self.cols == 2
+    }
+
+    #[inline(always)]
+    pub fn is_3x3(&self) -> bool {
+        self.rows == 3 && self.cols == 3
+    }
+
+    #[inline(always)]
+    pub fn is_4x4(&self) -> bool {
+        self.rows == 4 && self.cols == 4
+    }
+
     /// get the value in the matrix at position (`row`, `col`).
     ///
     /// returns none of the specified position is out of bounds.
@@ -283,6 +298,140 @@ where
         whole
     }
 
+    #[inline(always)]
+    fn mul_2x2(&self, rhs: Matrix<T>) -> Matrix<T> {
+        // todo : implement SIMD for float and int types
+        let a11 = *self.get(0, 0).unwrap();
+        let a12 = *self.get(0, 1).unwrap();
+        let a21 = *self.get(1, 0).unwrap();
+        let a22 = *self.get(1, 1).unwrap();
+
+        let b11 = *rhs.get(0, 0).unwrap();
+        let b12 = *rhs.get(0, 1).unwrap();
+        let b21 = *rhs.get(1, 0).unwrap();
+        let b22 = *rhs.get(1, 1).unwrap();
+
+        Matrix::from_vec(
+            self.rows,
+            self.cols,
+            vec![
+                a11 * b11 + a12 * b21,
+                a11 * b12 + a12 * b22,
+
+                a21 * b11 + a22 * b21,
+                a21 * b12 + a22 * b22,
+            ]
+        )
+    }
+
+    #[inline(always)]
+    fn mul_3x3(&self, rhs: Matrix<T>) -> Matrix<T> {
+        // todo : implement SIMD for float and int types
+        let a11 = *self.get(0, 0).unwrap();
+        let a12 = *self.get(0, 1).unwrap();
+        let a13 = *self.get(0, 2).unwrap();
+        let a21 = *self.get(1, 0).unwrap();
+        let a22 = *self.get(1, 1).unwrap();
+        let a23 = *self.get(1, 2).unwrap();
+        let a31 = *self.get(2, 0).unwrap();
+        let a32 = *self.get(2, 1).unwrap();
+        let a33 = *self.get(2, 2).unwrap();
+
+        let b11 = *rhs.get(0, 0).unwrap();
+        let b12 = *rhs.get(0, 1).unwrap();
+        let b13 = *rhs.get(0, 2).unwrap();
+        let b21 = *rhs.get(1, 0).unwrap();
+        let b22 = *rhs.get(1, 1).unwrap();
+        let b23 = *rhs.get(1, 2).unwrap();
+        let b31 = *rhs.get(2, 0).unwrap();
+        let b32 = *rhs.get(2, 1).unwrap();
+        let b33 = *rhs.get(2, 2).unwrap();
+
+
+        Matrix::from_vec(
+            self.rows,
+            self.cols,
+            vec![
+                a11 * b11 + a12 * b21 + a13 * b31,
+                a11 * b12 + a12 * b22 + a13 * b32,
+                a11 * b13 + a12 * b23 + a13 * b33,
+
+                a21 * b11 + a22 * b21 + a23 * b31,
+                a21 * b12 + a22 * b22 + a23 * b32,
+                a21 * b13 + a22 * b23 + a23 * b33,
+
+                a31 * b11 + a32 * b21 + a33 * b31,
+                a31 * b12 + a32 * b22 + a33 * b32,
+                a31 * b13 + a32 * b23 + a33 * b33,
+            ]
+        )
+    }
+
+    #[inline(always)]
+    fn mul_4x4(&self, rhs: Matrix<T>) -> Matrix<T> {
+        // todo : implement SIMD for float and int types
+        let a11 = *self.get(0, 0).unwrap();
+        let a12 = *self.get(0, 1).unwrap();
+        let a13 = *self.get(0, 2).unwrap();
+        let a14 = *self.get(0, 3).unwrap();
+        let a21 = *self.get(1, 0).unwrap();
+        let a22 = *self.get(1, 1).unwrap();
+        let a23 = *self.get(1, 2).unwrap();
+        let a24 = *self.get(1, 3).unwrap();
+        let a31 = *self.get(2, 0).unwrap();
+        let a32 = *self.get(2, 1).unwrap();
+        let a33 = *self.get(2, 2).unwrap();
+        let a34 = *self.get(2, 3).unwrap();
+        let a41 = *self.get(3, 0).unwrap();
+        let a42 = *self.get(3, 1).unwrap();
+        let a43 = *self.get(3, 2).unwrap();
+        let a44 = *self.get(3, 3).unwrap();
+
+        let b11 = *rhs.get(0, 0).unwrap();
+        let b12 = *rhs.get(0, 1).unwrap();
+        let b13 = *rhs.get(0, 2).unwrap();
+        let b14 = *rhs.get(0, 3).unwrap();
+        let b21 = *rhs.get(1, 0).unwrap();
+        let b22 = *rhs.get(1, 1).unwrap();
+        let b23 = *rhs.get(1, 2).unwrap();
+        let b24 = *rhs.get(1, 3).unwrap();
+        let b31 = *rhs.get(2, 0).unwrap();
+        let b32 = *rhs.get(2, 1).unwrap();
+        let b33 = *rhs.get(2, 2).unwrap();
+        let b34 = *rhs.get(2, 3).unwrap();
+        let b41 = *rhs.get(3, 0).unwrap();
+        let b42 = *rhs.get(3, 1).unwrap();
+        let b43 = *rhs.get(3, 2).unwrap();
+        let b44 = *rhs.get(3, 3).unwrap();
+
+
+        Matrix::from_vec(
+            self.rows,
+            self.cols,
+            vec![
+                a11 * b11 + a12 * b21 + a13 * b31 + a14 * b41,
+                a11 * b12 + a12 * b22 + a13 * b32 + a14 * b42,
+                a11 * b13 + a12 * b23 + a13 * b33 + a14 * b43,
+                a11 * b14 + a12 * b24 + a13 * b34 + a14 * b44,
+
+                a21 * b11 + a22 * b21 + a23 * b31 + a24 * b41,
+                a21 * b12 + a22 * b22 + a23 * b32 + a24 * b42,
+                a21 * b13 + a22 * b23 + a23 * b33 + a24 * b43,
+                a21 * b14 + a22 * b24 + a23 * b34 + a24 * b44,
+
+                a31 * b11 + a32 * b21 + a33 * b31 + a34 * b41,
+                a31 * b12 + a32 * b22 + a33 * b32 + a34 * b42,
+                a31 * b13 + a32 * b23 + a33 * b33 + a34 * b43,
+                a31 * b14 + a32 * b24 + a33 * b34 + a34 * b44,
+
+                a41 * b11 + a42 * b21 + a43 * b31 + a44 * b41,
+                a41 * b12 + a42 * b22 + a43 * b32 + a44 * b42,
+                a41 * b13 + a42 * b23 + a43 * b33 + a44 * b43,
+                a41 * b14 + a42 * b24 + a43 * b34 + a44 * b44,
+            ]
+        )
+    }
+
     /// multiplies two matrices by the standard
     /// General Matrix-Matrix Multiplication algorithm.
     pub fn gemm(&self, rhs: Matrix<T>) -> Matrix<T> {
@@ -405,6 +554,19 @@ where
     /// performs general matrix multiplication for two matrices
     fn mul(self, rhs: Self) -> Self::Output {
         assert_eq!(self.cols, rhs.rows);
+
+        // special matrix cases
+        if self.is_2x2() && rhs.is_2x2() {
+            return self.mul_2x2(rhs)
+        }
+
+        if self.is_3x3() && rhs.is_3x3() {
+            return self.mul_3x3(rhs);
+        }
+
+        if self.is_4x4() && rhs.is_4x4() {
+            return self.mul_4x4(rhs);
+        }
 
         let largest_dimension = max(
             max(self.rows, self.cols),
