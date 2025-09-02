@@ -19,7 +19,7 @@ fn test_transpose() {
 }
 
 #[test]
-fn test_gemm_square() {
+fn test_mul_square() {
     let a_data = vec![1, 2, 3, 4];
     let b_data = vec![4, 3, 2, 1];
 
@@ -33,7 +33,7 @@ fn test_gemm_square() {
 }
 
 #[test]
-fn test_gemm_non_square() {
+fn test_mul_non_square() {
     let a_data = vec![1, 2,
                       3, 4,
                       5, 6];
@@ -51,4 +51,29 @@ fn test_gemm_non_square() {
     assert_eq!(c.data, vec![12, 9, 6,
                             30, 23, 16,
                             48, 37, 26]);
+}
+
+#[test]
+fn test_pad() {
+    let a_data = vec![1, 2,
+                      3, 4];
+
+    let b_data = vec![1, 2, 3,
+                      4, 5, 6];
+
+    let a = Matrix::from_vec(2, 2, a_data);
+    let b = Matrix::from_vec(2, 3, b_data);
+
+    let pad_a = a.pad_to_size(2);
+    let pad_b = b.pad_to_size(4);
+
+    assert_eq!(pad_a.data, vec![1, 2,
+                                3, 4]
+    );
+
+    assert_eq!(pad_b.data, vec![1, 2, 3, 0,
+                                4, 5, 6, 0,
+                                0, 0, 0, 0,
+                                0, 0, 0, 0]
+    );
 }
