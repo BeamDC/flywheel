@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 rayon = "1.11.0"
+#wide = "0.7.33" # simd stuff
 
 [dev-dependencies]
 rand = "0.8"

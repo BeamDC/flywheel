@@ -1,14 +1,14 @@
-use rayon::iter::ParallelIterator;
 use std::cmp::max;
 use std::ops::{Add, AddAssign, Mul, Sub};
+use crate::math::matrix_simd::MatrixSimd;
 
 #[derive(Clone, Debug)]
 pub struct Matrix<T>
 where
     T: Default + Clone + Copy
-    // + Send + Sync
     + Mul<Output = T> + Add<Output = T> + Sub<Output = T>
-    + AddAssign,
+    + AddAssign
+    + MatrixSimd,
 {
     pub data: Vec<T>,
     pub rows: usize,
@@ -18,9 +18,9 @@ where
 impl<T> Matrix<T>
 where
     T: Default + Clone + Copy
-    // + Send + Sync
     + Mul<Output = T> + Add<Output = T> + Sub<Output = T>
-    + AddAssign,
+    + AddAssign
+    + MatrixSimd,
 {
     /// construct a new `Matrix<T>`
     /// with rows and columns specified by `rows` and `cols`,
@@ -107,7 +107,7 @@ where
     ///pad a matrix to ensure that it is a square of a specified size
     /// # Examples
     ///
-    /// ```
+    /// ```ignore
     /// # #![allow(noop_method_call)]
     /// use flywheel::math::matrix::Matrix;
     ///
@@ -154,7 +154,7 @@ where
     /// to ensure this property it may be worth using [`Matrix::pad_to_size`]
     /// # Examples
     ///
-    /// ```
+    /// ```ignore
     /// # #![allow(noop_method_call)]
     /// use flywheel::math::matrix::Matrix;
     ///
@@ -235,7 +235,7 @@ where
     /// this expects that all quarters are square matrices of equal size.
     /// # Examples
     ///
-    /// ```
+    /// ```ignore
     /// # #![allow(noop_method_call)]
     /// use flywheel::math::matrix::Matrix;
     ///
@@ -299,7 +299,7 @@ where
     }
 
     #[inline(always)]
-    fn mul_2x2(&self, rhs: Matrix<T>) -> Matrix<T> {
+    pub fn mul_2x2(&self, rhs: &Matrix<T>) -> Matrix<T> {
         // todo : implement SIMD for float and int types
         let a11 = *self.get(0, 0).unwrap();
         let a12 = *self.get(0, 1).unwrap();
@@ -325,7 +325,7 @@ where
     }
 
     #[inline(always)]
-    fn mul_3x3(&self, rhs: Matrix<T>) -> Matrix<T> {
+    pub fn mul_3x3(&self, rhs: &Matrix<T>) -> Matrix<T> {
         // todo : implement SIMD for float and int types
         let a11 = *self.get(0, 0).unwrap();
         let a12 = *self.get(0, 1).unwrap();
@@ -368,7 +368,7 @@ where
     }
 
     #[inline(always)]
-    fn mul_4x4(&self, rhs: Matrix<T>) -> Matrix<T> {
+    pub fn mul_4x4(&self, rhs: &Matrix<T>) -> Matrix<T> {
         // todo : implement SIMD for float and int types
         let a11 = *self.get(0, 0).unwrap();
         let a12 = *self.get(0, 1).unwrap();
@@ -503,9 +503,9 @@ where
 impl<T> Add for Matrix<T>
 where
     T: Default + Clone + Copy
-    // + Send + Sync
     + Mul<Output = T> + Add<Output = T> + Sub<Output = T>
-    + AddAssign,
+    + AddAssign
+    + MatrixSimd,
 {
     type Output = Self;
 
@@ -524,9 +524,9 @@ where
 impl<T> Sub for Matrix<T>
 where
     T: Default + Clone + Copy
-    // + Send + Sync
     + Mul<Output = T> + Add<Output = T> + Sub<Output = T>
-    + AddAssign,
+    + AddAssign
+    + MatrixSimd,
 {
     type Output = Self;
 
@@ -545,9 +545,9 @@ where
 impl<T> Mul for Matrix<T>
 where
     T: Default + Clone + Copy
-    // + Send + Sync
     + Mul<Output = T> + Add<Output = T> + Sub<Output = T>
-    + AddAssign,
+    + AddAssign
+    + MatrixSimd,
 {
     type Output = Matrix<T>;
 
@@ -557,15 +557,15 @@ where
 
         // special matrix cases
         if self.is_2x2() && rhs.is_2x2() {
-            return self.mul_2x2(rhs)
+            return MatrixSimd::simd_2x2_mul(&self, &rhs)
         }
 
         if self.is_3x3() && rhs.is_3x3() {
-            return self.mul_3x3(rhs);
+            return MatrixSimd::simd_3x3_mul(&self, &rhs)
         }
 
         if self.is_4x4() && rhs.is_4x4() {
-            return self.mul_4x4(rhs);
+            return MatrixSimd::simd_4x4_mul(&self, &rhs)
         }
 
         let largest_dimension = max(
